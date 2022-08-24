@@ -21,8 +21,6 @@ namespace Assignment
         private uint padding_bytes;
         private uint width_bytes;
         private uint pixels;
-      
-
 
         public List<uint> ParsingBMPHeader(BinaryReader br) //binary file로부터 비트 스트림을 가진 객체 br을 parameter로 받음
         {
@@ -40,7 +38,7 @@ namespace Assignment
             pixels = pixel_height * pixel_width;
             PrintToConsole();
 
-            List<uint> list = new List<uint> {header_size, pixel_width, pixel_height, pixel_depth,pixels, row_size, padding_bits, padding_bytes };
+            List<uint> list = new List<uint> { header_size, pixel_width, pixel_height, pixel_depth, pixels, row_size, padding_bits, padding_bytes };
             return list;
         }
         public void PrintToConsole()
@@ -77,7 +75,7 @@ namespace Assignment
             int paddingByte = padding / 8;
 
             var output = new Bitmap(width, height, pixelFormat);
-            Console.WriteLine("Applied Width, Height : " + width + " " +  height + " " +  pixelFormat);
+            Console.WriteLine("Applied Width, Height : " + width + " " + height + " " + pixelFormat);
             var rect = new Rectangle(0, 0, width, height);
             var bmpData = output.LockBits(rect, ImageLockMode.ReadWrite, output.PixelFormat);
 
@@ -87,7 +85,7 @@ namespace Assignment
             var ptr = bmpData.Scan0;
             for (var i = 0; i < height; i++)
             {
-                Marshal.Copy(arr, i * arrRowLength, ptr+paddingByte, arrRowLength);
+                Marshal.Copy(arr, i * arrRowLength, ptr, arrRowLength);
                 ptr += arrRowLength;
             }
 
@@ -95,7 +93,7 @@ namespace Assignment
             for (int index = 0; index < output.Palette.Entries.Length; ++index)
             {
                 //모노 이미지로 변환해주지 않으면 칼라이미지가 깨진채로 사용된다.
-               
+
                 newPalette.Entries[index] = Color.FromArgb(index, index, index);
 
                 //위의 코드를 수행하지 않고 아래의 주석 코드를 적용하여 그레이스케일을 억지로 적용하면, 깨진 색에 노이즈가 낀 이미지에 그레이스케일이 적용된다.
@@ -110,6 +108,96 @@ namespace Assignment
             output.UnlockBits(bmpData);
             return output;
         }
+
+        public static Bitmap Dilate(Bitmap SrcImage)
+        {
+            // Create Destination bitmap.
+            Bitmap tempbmp = new Bitmap(SrcImage.Width, SrcImage.Height, PixelFormat.Format8bppIndexed);
+
+            // Take source bitmap data.
+            BitmapData SrcData = SrcImage.LockBits(new Rectangle(0, 0,
+                SrcImage.Width, SrcImage.Height), ImageLockMode.ReadOnly,
+                PixelFormat.Format8bppIndexed);
+
+            // Take destination bitmap data.
+            BitmapData DestData = tempbmp.LockBits(new Rectangle(0, 0, tempbmp.Width,
+                tempbmp.Height), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
+
+            // Element array to used to dilate.
+            byte[,] sElement = new byte[5, 5] {
+            {0,0,1,0,0},
+            {0,1,1,1,0},
+            {1,1,1,1,1},
+            {0,1,1,1,0},
+            {0,0,1,0,0}
+    };
+
+            // Element array size.
+            int size = 5;
+            byte max, clrValue;
+            int radius = size / 2;
+            int ir, jr;
+
+            unsafe
+            {
+
+                // Loop for Columns.
+                for (int colm = radius; colm < DestData.Height - radius; colm++)
+                {
+                    // Initialise pointers to at row start.
+                    byte* ptr = (byte*)SrcData.Scan0 + (colm * SrcData.Stride);
+                    byte* dstPtr = (byte*)DestData.Scan0 + (colm * SrcData.Stride);
+
+                    // Loop for Row item.
+                    for (int row = radius; row < DestData.Width - radius; row++)
+                    {
+                        max = 0;
+                        clrValue = 0;
+
+                        // Loops for element array.
+                        for (int eleColm = 0; eleColm < 5; eleColm++)
+                        {
+                            ir = eleColm - radius;
+                            byte* tempPtr = (byte*)SrcData.Scan0 +
+                                ((colm + ir) * SrcData.Stride);
+
+                            for (int eleRow = 0; eleRow < 5; eleRow++)
+                            {
+                                jr = eleRow - radius;
+
+                                // Get neightbour element color value.
+                                clrValue = (byte)tempPtr[row + jr];
+
+                                if (max < clrValue)
+                                {
+                                    if (sElement[eleColm, eleRow] != 0)
+                                        max = clrValue;
+                                }
+                            }
+                        }
+
+                        *dstPtr = max;
+
+                        ptr += 1;
+                        dstPtr += 1;
+                    }
+                }
+            }
+            var newPalette = tempbmp.Palette;
+            for (int index = 0; index < tempbmp.Palette.Entries.Length; ++index)
+            {
+                newPalette.Entries[index] = Color.FromArgb(index, index, index);
+            }
+
+            tempbmp.Palette = newPalette;
+            // Dispose all Bitmap data.
+            SrcImage.UnlockBits(SrcData);
+            tempbmp.UnlockBits(DestData);
+
+            // return dilated bitmap.
+            return tempbmp;
+        }
+
+
     }
-    
 }
