@@ -130,7 +130,7 @@ namespace Assignment
                         catch (Exception openingError)
                         {
                             Console.WriteLine("Error : " + openingError.ToString());
-                            met.ParsingBMPHeader(br);
+                     
                             bm = (Bitmap)Method.ImageFromRawArray(b, (int)list[1], (int)list[2], PixelFormat.Format8bppIndexed, (int)list[6]);
                         }
 
@@ -181,8 +181,8 @@ namespace Assignment
 
         private void btn_SaveImage_Click(object sender, EventArgs e)
         {
-            Bitmap bm = (Bitmap)photo_Executed.Image;
-            bm.Save("C:\\Users\\jhlee98\\Desktop\\" + "savedImage.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+            Image bm = (Bitmap)photo_Executed.Image;
+            bm.Save("C:\\Users\\jhlee98\\Desktop\\" + "savedImage", System.Drawing.Imaging.ImageFormat.Bmp);
         }
 
         private void btn_Gaussian_Click(object sender, EventArgs e)
@@ -302,6 +302,12 @@ namespace Assignment
         private void btn_Expand_Click_1(object sender, EventArgs e)
         {
             photo_Executed.Image = Method.Dilate((Bitmap)photo_Executed.Image);
+        }
+
+        private void btn_Contract_Click(object sender, EventArgs e)
+        {
+            photo_Executed.Image = Method.Erode((Bitmap)photo_Executed.Image);
+           
         }
     }
 

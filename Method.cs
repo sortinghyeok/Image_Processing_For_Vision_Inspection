@@ -72,8 +72,6 @@ namespace Assignment
 
         public static Image ImageFromRawArray(byte[] arr, int width, int height, PixelFormat pixelFormat, int padding)
         {
-            int paddingByte = padding / 8;
-
             var output = new Bitmap(width, height, pixelFormat);
             Console.WriteLine("Applied Width, Height : " + width + " " + height + " " + pixelFormat);
             var rect = new Rectangle(0, 0, width, height);
@@ -109,30 +107,27 @@ namespace Assignment
             return output;
         }
 
-        public static Bitmap Dilate(Bitmap SrcImage)
+        public static Bitmap Dilate(Bitmap bmpData)
         {
             // Create Destination bitmap.
-            Bitmap tempbmp = new Bitmap(SrcImage.Width, SrcImage.Height, PixelFormat.Format8bppIndexed);
+            Bitmap copiedImage = new Bitmap(bmpData.Width, bmpData.Height, PixelFormat.Format8bppIndexed);
 
             // Take source bitmap data.
-            BitmapData SrcData = SrcImage.LockBits(new Rectangle(0, 0,
-                SrcImage.Width, SrcImage.Height), ImageLockMode.ReadOnly,
+            BitmapData LockedImage = bmpData.LockBits(new Rectangle(0, 0,
+                bmpData.Width, bmpData.Height), ImageLockMode.ReadOnly,
                 PixelFormat.Format8bppIndexed);
 
-            // Take destination bitmap data.
-            BitmapData DestData = tempbmp.LockBits(new Rectangle(0, 0, tempbmp.Width,
-                tempbmp.Height), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
+            BitmapData DestData = copiedImage.LockBits(new Rectangle(0, 0, copiedImage.Width,
+                copiedImage.Height), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
 
-            // Element array to used to dilate.
-            byte[,] sElement = new byte[5, 5] {
+            byte[,] maskMatrix = new byte[5, 5] {
             {0,0,1,0,0},
             {0,1,1,1,0},
             {1,1,1,1,1},
             {0,1,1,1,0},
             {0,0,1,0,0}
-    };
+                };
 
-            // Element array size.
             int size = 5;
             byte max, clrValue;
             int radius = size / 2;
@@ -142,35 +137,35 @@ namespace Assignment
             {
 
                 // Loop for Columns.
-                for (int colm = radius; colm < DestData.Height - radius; colm++)
+                for (int cols = radius; cols < DestData.Height - radius; cols++)
                 {
                     // Initialise pointers to at row start.
-                    byte* ptr = (byte*)SrcData.Scan0 + (colm * SrcData.Stride);
-                    byte* dstPtr = (byte*)DestData.Scan0 + (colm * SrcData.Stride);
+                    byte* ptr = (byte*)LockedImage.Scan0 + (cols * LockedImage.Stride);
+                    byte* dstPtr = (byte*)DestData.Scan0 + (cols * LockedImage.Stride);
 
                     // Loop for Row item.
-                    for (int row = radius; row < DestData.Width - radius; row++)
+                    for (int rows = radius; rows < DestData.Width - radius; rows++)
                     {
                         max = 0;
                         clrValue = 0;
 
                         // Loops for element array.
-                        for (int eleColm = 0; eleColm < 5; eleColm++)
+                        for (int matCols = 0; matCols < 5; matCols++)
                         {
-                            ir = eleColm - radius;
-                            byte* tempPtr = (byte*)SrcData.Scan0 +
-                                ((colm + ir) * SrcData.Stride);
+                            ir = matCols - radius;
+                            byte* tempPtr = (byte*)LockedImage.Scan0 +
+                                ((cols + ir) * LockedImage.Stride);
 
-                            for (int eleRow = 0; eleRow < 5; eleRow++)
+                            for (int matRows = 0; matRows < 5; matRows++)
                             {
-                                jr = eleRow - radius;
+                                jr = matRows - radius;
 
                                 // Get neightbour element color value.
-                                clrValue = (byte)tempPtr[row + jr];
+                                clrValue = (byte)tempPtr[rows + jr];
 
                                 if (max < clrValue)
                                 {
-                                    if (sElement[eleColm, eleRow] != 0)
+                                    if (maskMatrix[matCols, matRows] != 0)
                                         max = clrValue;
                                 }
                             }
@@ -183,21 +178,96 @@ namespace Assignment
                     }
                 }
             }
-            var newPalette = tempbmp.Palette;
-            for (int index = 0; index < tempbmp.Palette.Entries.Length; ++index)
+            var newPalette = copiedImage.Palette;
+            for (int index = 0; index < copiedImage.Palette.Entries.Length; ++index)
             {
                 newPalette.Entries[index] = Color.FromArgb(index, index, index);
             }
 
-            tempbmp.Palette = newPalette;
+            copiedImage.Palette = newPalette;
             // Dispose all Bitmap data.
-            SrcImage.UnlockBits(SrcData);
-            tempbmp.UnlockBits(DestData);
+            bmpData.UnlockBits(LockedImage);
+            copiedImage.UnlockBits(DestData);
 
             // return dilated bitmap.
-            return tempbmp;
+            return copiedImage;
+        }
+        public static Bitmap Erode(Bitmap bmpData)
+        {
+
+            // Create Destination bitmap.
+            Bitmap copiedImage = new Bitmap(bmpData.Width, bmpData.Height, PixelFormat.Format8bppIndexed);
+
+            // Take source bitmap data.
+            BitmapData LockedImage = bmpData.LockBits(new Rectangle(0, 0,
+                bmpData.Width, bmpData.Height), ImageLockMode.ReadOnly,
+                PixelFormat.Format8bppIndexed);
+
+            BitmapData DestData = copiedImage.LockBits(new Rectangle(0, 0, copiedImage.Width,
+                copiedImage.Height), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
+           
+            int size = 5;
+            byte min, clrValue;
+            int ir, jr; 
+            int radius = (size-1) / 2;
+     
+            unsafe
+            {
+
+                //컬럼 루프
+                for (int cols = radius; cols < DestData.Height - radius; cols++)
+                {
+                    byte* ptr = (byte*)LockedImage.Scan0 + (cols * LockedImage.Stride);
+                    byte* dstPtr = (byte*)DestData.Scan0 + (cols * LockedImage.Stride);
+
+                    //로우 루프
+                    for (int rows = radius; rows < DestData.Width - radius; rows++)
+                    {
+                        min = 255;
+                        clrValue = 0;
+
+                       
+                        for (int matCols = 0; matCols < 5; matCols++)
+                        {
+                            ir = matCols - radius;
+                            byte* tempPtr = (byte*)LockedImage.Scan0 +
+                                ((cols + ir) * LockedImage.Stride);
+
+                            for (int matRows = 0; matRows < 5; matRows++)
+                            {
+                                jr = matRows - radius;
+
+                                //주변 화소 값을 통한 min 갱신
+                                clrValue = (byte)tempPtr[rows + jr];
+                                min = Math.Min(min, clrValue);
+                               
+                            }
+                        }
+
+                        *dstPtr = min;
+
+                        ptr += 1;
+                        dstPtr += 1;
+                    }
+                }
+            }
+            
+
+
+            var newPalette = copiedImage.Palette;
+            for (int index = 0; index < copiedImage.Palette.Entries.Length; ++index)
+            {
+                newPalette.Entries[index] = Color.FromArgb(index, index, index);
+            }
+
+            copiedImage.Palette = newPalette;
+            bmpData.UnlockBits(LockedImage);
+            copiedImage.UnlockBits(DestData);
+
+            // return dilated bitmap.
+            return copiedImage;
         }
 
-
     }
+
 }

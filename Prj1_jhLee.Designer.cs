@@ -131,6 +131,7 @@ namespace Assignment
             this.btn_Contract.TabIndex = 10;
             this.btn_Contract.Text = "수축";
             this.btn_Contract.UseVisualStyleBackColor = true;
+            this.btn_Contract.Click += new System.EventHandler(this.btn_Contract_Click);
             // 
             // btn_HistoEqualizer
             // 
