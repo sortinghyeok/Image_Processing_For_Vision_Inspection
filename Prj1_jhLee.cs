@@ -13,8 +13,6 @@ using System.Drawing.Imaging;
 
 namespace Assignment
 {
-
-
     public partial class Prj1_jhLee : Form
     {
         private int oriWidth;
@@ -26,6 +24,7 @@ namespace Assignment
 
         private Point executedBeginPoint = Point.Empty;
         private Point executedMovePoint = Point.Empty;
+        string curentFilePath = "";
 
         private void photo_Executed_MouseWheel(object sender, MouseEventArgs e)
         {
@@ -105,7 +104,7 @@ namespace Assignment
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     var filePath = ofd.FileName; //파일 경로
-
+                    curentFilePath = ofd.FileName;
                     if (!filePath.EndsWith(".bmp"))
                     {
                         MessageBox.Show("알림", "파일 형식이 맞지 않습니다.");
@@ -271,12 +270,14 @@ namespace Assignment
 
         private void btn_OtsuThresh_Click(object sender, EventArgs e)
         {
-
+            photo_Executed.Image = Method.OtsuThresholding((Bitmap)photo_Executed.Image);
         }
+
+        
 
         private void btn_HistoEqualizer_Click(object sender, EventArgs e)
         {
-
+            photo_Executed.Image = Method.hist_Equalizer((Bitmap)photo_Executed.Image);
         }
 
         private void btn_Gauss_Click(object sender, EventArgs e)

@@ -252,8 +252,6 @@ namespace Assignment
                 }
             }
             
-
-
             var newPalette = copiedImage.Palette;
             for (int index = 0; index < copiedImage.Palette.Entries.Length; ++index)
             {
@@ -266,6 +264,149 @@ namespace Assignment
 
             // return dilated bitmap.
             return copiedImage;
+        }
+
+        public static Bitmap hist_Equalizer(Bitmap bmpData)
+        {
+            int width = bmpData.Width;
+            int height = bmpData.Height;
+            Bitmap res = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+            BitmapData sd = bmpData.LockBits(new Rectangle(0, 0, width, height),
+                ImageLockMode.ReadOnly, PixelFormat.Format8bppIndexed);
+            int bytes = sd.Stride * sd.Height;
+            byte[] buffer = new byte[bytes];
+            byte[] result = new byte[bytes];
+            Marshal.Copy(sd.Scan0, buffer, 0, bytes);
+            bmpData.UnlockBits(sd);
+            int current = 0;
+            double[] pn = new double[256];
+            for (int p = 0; p < bytes; p++)
+            {
+                pn[buffer[p]]++;
+            }
+            for (int prob = 0; prob < pn.Length; prob++)
+            {
+                pn[prob] /= (width * height);
+            }
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    current = y * sd.Stride + x;
+                    double sum = 0;
+                    for (int i = 0; i < buffer[current]; i++)
+                    {
+                        sum += pn[i];
+                    }
+                    
+                    result[current] = (byte)Math.Floor(255 * sum);
+                    
+                    //result[current + 3] = 255;
+                }
+            }
+       
+            BitmapData rd = res.LockBits(new Rectangle(0, 0, width, height),
+                ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
+            Marshal.Copy(result, 0, rd.Scan0, bytes);
+            var ptr = rd.Scan0;
+            for (var i = 0; i < bmpData.Height; i++)
+            {
+                Marshal.Copy(result, i * bmpData.Width, ptr, bmpData.Width);
+                ptr += bmpData.Width;
+            }
+            var newPalette = res.Palette;
+            for (int index = 0; index < res.Palette.Entries.Length; ++index)
+            {
+                newPalette.Entries[index] = Color.FromArgb(index, index, index);
+            }
+
+            res.Palette = newPalette;
+
+            res.UnlockBits(rd);
+            return res;
+        }
+
+        public static Bitmap OtsuThresholding(Bitmap img)
+        {
+            int width = img.Width;
+            int height = img.Height;
+
+            Bitmap res_img = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+            BitmapData image_data = img.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format8bppIndexed);
+            BitmapData res_data = res_img.LockBits(
+              new Rectangle(0, 0, width, height),
+              ImageLockMode.WriteOnly,
+              PixelFormat.Format8bppIndexed);
+
+
+            int bytes = image_data.Stride * image_data.Height;
+            byte[] buffer = new byte[bytes];
+            byte[] result = new byte[bytes];
+
+            Marshal.Copy(image_data.Scan0, buffer, 0, bytes);
+            img.UnlockBits(image_data);
+
+            double[] histogram = new double[256];
+            for(int i = 0; i<bytes; i++)
+            {
+                histogram[buffer[i]]++;
+            }
+
+            double global_mean = 0;
+            for (int i = 0; i < 256; i++)
+            {
+                global_mean += i * histogram[i];
+            }
+            int total = width*height;
+            double sumB = 0;
+            double wB = 0;
+            double wF = 0;
+
+            double varMax = 0;
+            double threshold = 0;
+
+            for (int t = 0; t < 256; t++)
+            {
+                wB += histogram[t];               // Weight Background
+                if (wB == 0) continue;
+
+                wF = total - wB;                 // Weight Foreground
+                if (wF == 0) break;
+
+                sumB += (t * histogram[t]);
+
+                double mB = sumB / wB;            // Mean Background
+                double mF = (global_mean - sumB) / wF;    // Mean Foreground
+
+                // Calculate Between Class Variance
+                double varBetween = wB * wF * (mB - mF) * (mB - mF);
+
+                // Check if new maximum found
+                if (varBetween > varMax)
+                {
+                    varMax = varBetween;
+                    threshold = t;
+                }
+            }
+
+            for (int i = 0; i < bytes; i++)
+            {
+                result[i] = (byte)((buffer[i] > threshold) ? 255 : 0);
+            }
+
+          
+            //Marshal.Copy(result, 0, res_data.Scan0, bytes);
+
+            var ptr = res_data.Scan0;
+            for (var i = 0; i < height; i++)
+            {
+                Marshal.Copy(result, i * width, ptr, width);
+                ptr += width;
+            }
+
+            res_img.UnlockBits(res_data);
+
+            return res_img;
         }
 
     }
