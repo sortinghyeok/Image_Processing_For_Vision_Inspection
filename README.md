@@ -21,7 +21,7 @@
 이슈
 - 오리지널 비트맵의 저장시 저장 안되는 이슈 발견
 
-## Histogram Equalization, Otsu Binarization 연산 적용 완료 / 2022.08.25
+## Histogram Equalization, Otsu Binarization 연산 적용 완료 / 2022.08.26
 
 완료
 - 히스토그램 평활화와 오츠 이진화 기능 구현 완료
