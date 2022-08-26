@@ -282,7 +282,9 @@ namespace Assignment
 
         private void btn_Gauss_Click(object sender, EventArgs e)
         {
-
+            //double[,] kernelMap = Method.GaussianKernel(3, 0.8); // division params : 2* pi * 2 * 2
+            //photo_Executed.Image = Method.GaussianConvolve((Bitmap)photo_Executed.Image, kernelMap);
+            photo_Executed.Image = Method.GaussianFilter((Bitmap)photo_Executed.Image);
         }
 
         private void btn_Template_Click(object sender, EventArgs e)

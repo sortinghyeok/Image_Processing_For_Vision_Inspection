@@ -409,6 +409,185 @@ namespace Assignment
             return res_img;
         }
 
+        //kernel 구현 시도중 실패...
+        public static double[,] GaussianKernel(int length, double weight)
+        {
+            double[,] kernel = new double[length, length];
+            double kernelSum = 0;
+            int offset = (length - 1) / 2;
+            double distance = 0;
+            double constant = 1d / (2 * Math.PI * weight * weight);
+            for (int y = -offset; y <= offset; y++)
+            {
+                for (int x = -offset; x <= offset; x++)
+                {
+                    distance = ((y * y) + (x * x)) / (2 * weight * weight);
+                    kernel[y + offset, x + offset] = constant * Math.Exp(-distance);
+                    kernelSum += kernel[y + offset, x + offset];
+                }
+            }
+            for (int y = 0; y < length; y++)
+            {
+                for (int x = 0; x < length; x++)
+                {
+                    kernel[y, x] = kernel[y, x] * 1d / kernelSum;
+                }
+            }
+            return kernel;
+        }
+
+        public static Bitmap GaussianConvolve(Bitmap srcImage, double[,] kernel)
+        {
+            int width = srcImage.Width;
+            int height = srcImage.Height;
+
+
+            Bitmap resultImage = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+            BitmapData srcData = srcImage.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format8bppIndexed);
+            int bytes = srcData.Width * srcData.Height;
+            byte[] buffer = new byte[bytes];
+            byte[] result = new byte[bytes];
+
+            Marshal.Copy(srcData.Scan0, buffer, 0, bytes);
+            srcImage.UnlockBits(srcData);
+
+            //get amount of array in dimension 0
+            int offset = (kernel.GetLength(0) - 1) /2;
+
+
+            double kcenter_data = 0;
+            int kcenter = 0;
+            int pIndex = 0;
+            for (int rows = offset; rows < height - offset; rows++)
+            {
+                int pvalue = 0;
+                for (int cols = offset; cols < width - offset; cols++)
+                {
+                    kcenter = rows * width + cols;
+                    for (int matRows = -offset; matRows < offset; matRows++)
+                    {
+                        for (int matCols = -offset; matCols < offset; matCols++)
+                        {
+                            pvalue = kcenter + matRows * width + matCols;      
+                            //double kernelValue = kernel[matRows + offset, matCols + offset];
+                            kcenter_data += (double)(buffer[pvalue]) * kernel[matRows + offset, matCols + offset];                         
+                        }
+                    }
+                    result[kcenter] = (byte)(kcenter_data);
+                }
+            }
+
+            BitmapData resultData = resultImage.LockBits(new Rectangle(0, 0, width, height),
+            ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
+            var ptr = resultData.Scan0;
+            for (var i = 0; i < height; i++)
+            {
+                Marshal.Copy(result, i * width, ptr, width);
+                ptr += width;
+            }
+
+            var newPalette = resultImage.Palette;
+            for (int index = 0; index < resultImage.Palette.Entries.Length; ++index)
+            {
+                newPalette.Entries[index] = Color.FromArgb(index, index, index);
+            }
+
+            resultImage.Palette = newPalette;
+
+            resultImage.UnlockBits(resultData);
+            return resultImage;
+
+        }
+
+        public static Bitmap GaussianFilter(Bitmap srcImage) {
+            byte[,] maskMatrix = new byte[3, 3] {
+            {1, 2, 1},
+            {2, 4, 2},
+            {1, 2, 1}
+                };
+
+        
+            int width = srcImage.Width;
+            int height = srcImage.Height;
+            
+            Bitmap resultImage = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
+            BitmapData srcData = srcImage.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format8bppIndexed);
+            int bytes = srcData.Stride * srcData.Height;
+            byte[] buffer = new byte[bytes];
+            byte[] result = new byte[bytes];
+
+            Marshal.Copy(srcData.Scan0, buffer, 0, bytes);
+            srcImage.UnlockBits(srcData);
+
+            int newValue;
+            int offset = 1;
+            for(int i = 0; i<height; i++)
+            {
+                for(int j = 0; j<width; j++)
+                {
+                    result[i*width + j] = 0;
+
+                }
+            }
+            for (int i = 1; i < height -1; i++)
+            {
+                for (int j = 1; j < width -1; j++)
+                {
+                    newValue = 0;
+                    for (int row = 0; row <3; row++)
+                    {
+                        for (int col =0; col < 3; col++)
+                        {
+                            //int kpixel = i * width + j + row * width + col;
+                            newValue += (maskMatrix[row, col] * buffer[(i+row-1)*width + j + col - 1]);
+                            newValue /= 3;
+                            result[i * width + j] = (byte)newValue;
+                        }
+                    }
+                }
+            }
+
+            /*
+            for (int i = offset; i < height - offset; i++)
+            {
+                for (int j = offset; j < width - offset; j++)
+                {
+                    newValue = 0;
+                    for (int row = -offset; row <= offset; row++)
+                    {
+                        for (int col = -offset; col <= offset; col++)
+                        {
+                            int kpixel = i * width + j + row*width + col;
+                            newValue += (maskMatrix[row + offset, col + offset] * buffer[kpixel]);
+                            newValue /= 20;
+                            result[i * width + j] = (byte)newValue;
+                        }
+                    }
+                }
+            }
+            */
+            BitmapData resultData = resultImage.LockBits(new Rectangle(0, 0, width, height),
+      ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
+            var ptr = resultData.Scan0;
+            for (var i = 0; i < height; i++)
+            {
+                Marshal.Copy(result, i * width, ptr, width);
+                ptr += width;
+            }
+            
+            var newPalette = resultImage.Palette;
+            for (int index = 0; index < resultImage.Palette.Entries.Length; ++index)
+            {
+                newPalette.Entries[index] = Color.FromArgb(index, index, index);
+            }
+
+            resultImage.Palette = newPalette;
+            
+            resultImage.UnlockBits(resultData);
+            return resultImage;
+
+        }
     }
+
 
 }
