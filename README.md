@@ -1,13 +1,21 @@
 # 픽셀 직접 접근 비전 알고리즘 적용 프로그램 개발
 
 ## 대용량 bmp 파일에 대한 로딩 로직 구현, 전체 이미지 세이브 로직 구현 완료 / 2022.08.23
-파일을 바이트 Stream으로 변경하고, 해당 Stream을 메모리 직접 접근을 통한 로우 레벨 수준의 분할 Reading하여 메모리가 처리 가능한 수준으로 바꾸어 로딩 성공
+
+완료
+- 파일을 바이트 Stream으로 변경하고, 해당 Stream을 메모리 직접 접근을 통한 로우 레벨 수준의 분할 Reading하여 메모리가 처리 가능한 수준으로 바꾸어 로딩 성공
+
+![image](https://user-images.githubusercontent.com/80696846/187153489-ae6e2f66-4648-4a9d-8f6d-87f70829dfa1.png)
 
 ## Morphology Dilation 연산 적용 완료, 확대, 축소 기능 적용 개발 완료 / 2022.08.24
 
 완료
 - 픽셀 패딩 밀리는 현상 수정 완료,
 - 모폴로지 연산 중 팽창 구현 완료
+
+![image](https://user-images.githubusercontent.com/80696846/187153700-5586d86a-fe5f-44d1-81f6-582ad16a2bd0.png)
+
+![image](https://user-images.githubusercontent.com/80696846/187153444-cf27ff3c-eab4-47a1-89ab-2015d861d676.png)
 
 이슈
 - 확대, 축소 시 저장 기능에 문제 있음
@@ -18,6 +26,8 @@
 완료
 - 모폴로지 연산 중 침식(축소) 구현 완료
 
+![image](https://user-images.githubusercontent.com/80696846/187153586-d223fe68-4c57-43ee-be9d-59d80d054f98.png)
+
 이슈
 - 오리지널 비트맵의 저장시 저장 안되는 이슈 발견
 
@@ -25,6 +35,10 @@
 
 완료
 - 히스토그램 평활화와 오츠 이진화 기능 구현 완료
+
+![image](https://user-images.githubusercontent.com/80696846/187153766-56467f2b-f607-463c-9601-e3b246d188ba.png)
+
+![image](https://user-images.githubusercontent.com/80696846/187153824-01ccb0c5-a318-4989-92c9-ccfbfdd10c05.png)
 
 이슈
 - Gaussian Filter 기능 로직 완료했으나 Blur의 느낌이 아님. 색이 단순히 어두워지는 느낌. 추후 로직을 살펴봐야할 필요 있음
@@ -36,10 +50,14 @@
 - 모폴로지 침식 중 픽셀의 우측만이 수그러드는 현상 발견, 코드 구현 중 커널의 중심이 정가운데가 아닌 좌측에 있는 것을 확인하고 이에 대한 수정 요망
 - 병렬 처리 시도 시 CPU 점유율이 98퍼센트까지 올라가고 프로그램은 응답이 없는 현상이 계속 
 
+![image](https://user-images.githubusercontent.com/80696846/187153961-877e655e-1105-4fe1-a2e8-5706f2bf75ea.png)
+
 ## Morphology Erosion, Dilation, Gaussian Filter 로직 병렬화 적용 성공 / 2022.08.29
 
 완료
-- 모폴로지 침식, 팽창, 가우시안 필터 연산에 병렬화를 적용하여 7~8배 정도의 연산 속도 향상 확인
+- 모폴로지 침식, 팽창, 가우시안 필터 연산에 병렬화를 적용하여 6~7배 정도의 연산 속도 향상 확인
+
+![image](https://user-images.githubusercontent.com/80696846/187154171-737cd69d-5e86-4fc3-aeed-2b0b67a8e42e.png)
 
 이슈
 - 픽셀의 우측이 수그러드는 현상에 대하여 커널 로직 상 문제 없음 확인. 이미지 패딩에 의한 것일 확률이 있어 이에 대한 이슈 발생
@@ -49,6 +67,8 @@
 완료
 - 가우시안 필터에 대한 로직 수정 완료
 - 패딩이 원인으로 추정되었던 이슈 로직 수정으로 해결 완료
+
+![image](https://user-images.githubusercontent.com/80696846/187154278-64f072c3-8961-4e4c-8122-bed3f8454f3d.png)
 
 이슈
 - 히스토그램 평활화에 병렬화 로직 추가 필요
