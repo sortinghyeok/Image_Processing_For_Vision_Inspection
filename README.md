@@ -57,6 +57,14 @@
 완료
 - 모폴로지 침식, 팽창, 가우시안 필터 연산에 병렬화를 적용하여 6~7배 정도의 연산 속도 향상 확인
 
+병렬 프로세싱 전
+
+![image](https://user-images.githubusercontent.com/80696846/187317424-5f65a369-d3f1-4473-bdce-fae15a46d060.png)
+
+병렬 프로세싱 후
+
+![image](https://user-images.githubusercontent.com/80696846/187317004-027a250a-6cae-454e-8f0d-d341cd6925e6.png)
+
 ![image](https://user-images.githubusercontent.com/80696846/187154171-737cd69d-5e86-4fc3-aeed-2b0b67a8e42e.png)
 
 이슈
