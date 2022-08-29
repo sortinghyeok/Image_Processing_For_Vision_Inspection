@@ -299,7 +299,7 @@ namespace Assignment
 
         private void btn_Laplace_Click(object sender, EventArgs e)
         {
-
+            //photo_Executed.Image = Method.LaplaceFilter((Bitmap)photo_Executed.Image);
         }
 
         private void btn_Expand_Click_1(object sender, EventArgs e)

@@ -268,8 +268,7 @@ namespace Assignment
             int width = bmpData.Width;
             int height = bmpData.Height;
             Bitmap res = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
-            BitmapData sd = bmpData.LockBits(new Rectangle(0, 0, width, height),
-                ImageLockMode.ReadOnly, PixelFormat.Format8bppIndexed);
+            BitmapData sd = bmpData.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format8bppIndexed);
             int bytes = sd.Stride * sd.Height;
             byte[] buffer = new byte[bytes];
             byte[] result = new byte[bytes];
@@ -460,9 +459,9 @@ namespace Assignment
                 for (int cols = offset; cols < width - offset; cols++)
                 {
                     kcenter = rows * width + cols;
-                    for (int matRows = -offset; matRows < offset; matRows++)
+                    for (int matRows = -offset; matRows <= offset; matRows++)
                     {
-                        for (int matCols = -offset; matCols < offset; matCols++)
+                        for (int matCols = -offset; matCols <= offset; matCols++)
                         {
                             pvalue = kcenter + matRows * width + matCols;      
                             //double kernelValue = kernel[matRows + offset, matCols + offset];
@@ -496,13 +495,9 @@ namespace Assignment
         }
 
         public static Bitmap GaussianFilter(Bitmap bmpData) {
-            double[,] maskMatrix = new double[3, 3] {
-
-            {0.025, 0.1, 0.025},
-            {0.1,  0.5,  0.1},
-            { 0.025, 0.1, 0.025},
-   
-                };
+            double[,] maskMatrix = new double[3, 3]  { { 1, 2, 1 }, 
+                                                        { 2, 4, 2 },
+                                                        {1, 2, 1} };
 
             int width = bmpData.Width;
             int height = bmpData.Height;
@@ -516,7 +511,7 @@ namespace Assignment
             unsafe
             {
                 Parallel.For(0, height, (int row) => {
-                    byte* tempPtr = (byte*)DestData.Scan0 + row * LockedImage.Stride;
+                    byte* tempPtr = (byte*)DestData.Scan0 + row * DestData.Stride;
                     for (int j = 0; j < width; j++)
                     {
                         tempPtr[j] = 0;
@@ -528,22 +523,23 @@ namespace Assignment
             {
                 Parallel.For(radius, DestData.Height - radius, (int ROWS) =>
                 {
-                    int newValue;
+                    double newValue;
                     for (int COLS = radius; COLS < DestData.Stride - radius; COLS++)
                     {
                         newValue = 0;
-                        byte* sptr = (byte*)LockedImage.Scan0 + (ROWS * LockedImage.Stride) + COLS;
+                        byte* center = (byte*)LockedImage.Scan0 + (ROWS * LockedImage.Stride) + COLS;
+                        byte* dptr = (byte*)DestData.Scan0 + (ROWS * DestData.Stride) + COLS;
 
-                        for (int MATROWS = -radius; MATROWS < radius; MATROWS++)
+                        for (int MATROWS = -radius; MATROWS <= radius; MATROWS++)
                         {
-                            for (int MATCOLS = -radius; MATCOLS < radius; MATCOLS++)
+                            for (int MATCOLS = -radius; MATCOLS <= radius; MATCOLS++)
                             {
-                                newValue += (int)(sptr[MATCOLS] * maskMatrix[MATROWS + radius, MATCOLS + radius]);
+                                newValue += ((*(center + MATROWS*LockedImage.Stride + MATCOLS)) * maskMatrix[MATROWS + radius, MATCOLS + radius]);
 
                             }
                         }
-                        byte* dptr = (byte*)DestData.Scan0 + (ROWS * DestData.Stride) + COLS;
-                        *dptr = (byte)newValue;
+                       
+                        *dptr = (byte)(newValue/16);
                     }
                 });          
                 
@@ -562,7 +558,29 @@ namespace Assignment
 
             return copiedImage;     
         }
-    }
 
+        /*
+        public static Bitmap LaplaceFilter(Bitmap bmpData)
+        {
+            double[,] matrix = new double[5, 5] {
+            { 0,0,-1,0,0},
+            { 0, -1, -2, -1, 0},
+            { -1, -2, 16, -2, -1},
+            { 0, -1, -2, -1, 0},
+            { 0,0,-1,0,0}
+            };
+
+            BitmapData bitmapData = bmpData.LockBits(new Rectangle(0, 0, bmpData.Width, bmpData.Height), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
+
+            Bitmap resultImage = new Bitmap(bmpData.Width, bmpData.Height, PixelFormat.Format8bppIndexed);
+            BitmapData srcData = resultImage.LockBits(new Rectangle(0, 0, resultImage.Width, resultImage.Height), ImageLockMode.ReadOnly, PixelFormat.Format8bppIndexed);
+
+
+            return resultImage;
+        }
+
+      */
+        
+    }
 
 }
