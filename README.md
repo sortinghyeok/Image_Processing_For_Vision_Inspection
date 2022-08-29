@@ -55,13 +55,17 @@
 ## Morphology Erosion, Dilation, Gaussian Filter 로직 병렬화 적용 성공 / 2022.08.29
 
 완료
-- 모폴로지 침식, 팽창, 가우시안 필터 연산에 병렬화를 적용하여 6~7배 정도의 연산 속도 향상 확인
+- 모폴로지 침식, 팽창, 가우시안 필터 연산에 병렬화를 적용하여 7~10배 정도의 연산 속도 향상 확인
 
 병렬 프로세싱 전
+
+![image](https://user-images.githubusercontent.com/80696846/187317595-3c7ba302-a153-4bbb-a2a2-222e45e64c89.png)
 
 ![image](https://user-images.githubusercontent.com/80696846/187317424-5f65a369-d3f1-4473-bdce-fae15a46d060.png)
 
 병렬 프로세싱 후
+
+![image](https://user-images.githubusercontent.com/80696846/187317689-20a17805-64b4-4a50-a6b2-513e4f91fa68.png)
 
 ![image](https://user-images.githubusercontent.com/80696846/187317004-027a250a-6cae-454e-8f0d-d341cd6925e6.png)
 
