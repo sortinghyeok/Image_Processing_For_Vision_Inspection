@@ -102,4 +102,7 @@
 - Morphology Pointer를 자동으로 1씩 늘어나 픽셀 별로 모두 적용되는 것을 유도했으나, padding 1~3bytes에 대하여도 이것이 적용되어 우측 여유 공간의 수축이 일어났던 것으로 확인
 - Pixel에 대한 접근시 해당 Row의 Stride를 갱신하는 것으로 정확한 line의 매핑이 가능해져, 해당 이슈에 대한 수정이 완료됨
 
+![image](https://user-images.githubusercontent.com/80696846/187332712-6694b5f2-d5e9-4030-8b36-3f6db17f759d.png)
+
+![image](https://user-images.githubusercontent.com/80696846/187332644-4c78387e-9b0e-4496-85d8-88d8cc88cef5.png)
 
