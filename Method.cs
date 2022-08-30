@@ -572,8 +572,8 @@ namespace Assignment
             {
                 var ptr = (byte*)LockedImage.Scan0;
                 var cptr = (byte*)DestData.Scan0;
-                
-                for (int row = 0; row < height; row++)
+
+                Parallel.For(0, height, (int row) =>
                 {
                     byte* tempPtr = (byte*)DestData.Scan0 + row * DestData.Stride;
                     for (int col = 0; col < width; col++)
@@ -581,9 +581,9 @@ namespace Assignment
 
                         cptr[col] = 0;
                     }
-                }
-
-                for (int row = 1; row<height-1; row++)
+                });
+        
+                Parallel.For(1, height-1, (int row) =>  
                 {
                     for(int col = 1; col<width-1; col++)
                     {
@@ -600,7 +600,7 @@ namespace Assignment
                         }
                         *(cptr + row * DestData.Stride + col) = (byte)gray;//result[i*width + j] = (byte)gray;
                     }
-                }
+                });
             }        
 
             bmpData.UnlockBits(LockedImage);

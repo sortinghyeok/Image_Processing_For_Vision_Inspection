@@ -180,14 +180,11 @@ namespace Assignment
 
         private void btn_SaveImage_Click(object sender, EventArgs e)
         {
-            Image bm = (Bitmap)photo_Executed.Image;
-            bm.Save("C:\\Users\\jhlee98\\Desktop\\" + "savedImage", System.Drawing.Imaging.ImageFormat.Bmp);
+            Bitmap bm = (Bitmap)photo_Executed.Image.Clone();
+            bm.Save("C:\\Users\\jhlee98\\Desktop\\" + "savedImage.bmp", ImageFormat.Bmp);
         }
 
-        private void btn_Gaussian_Click(object sender, EventArgs e)
-        {
-
-        }
+ 
 
         private void photo_bmp_MouseDown(object sender, MouseEventArgs e)
         {
