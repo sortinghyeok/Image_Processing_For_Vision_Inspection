@@ -136,31 +136,26 @@ namespace Assignment
 
             unsafe
             {
-
-                // Loop for Columns.
                 Parallel.For(radius, DestData.Height - radius, (int ROWS) => {
-                    // Initialise pointers to at row start.
+      
                     byte* ptr = (byte*)LockedImage.Scan0 + (ROWS * LockedImage.Stride);
                     byte* dstPtr = (byte*)DestData.Scan0 + (ROWS * LockedImage.Stride);
 
-                    // Loop for Row item.
+ 
                     for (int COLS = radius; COLS < DestData.Width - radius; COLS++)
                     {
                         byte max = 0;
                         byte clrValue = 0;
-
-                        // Loops for element array.
+            
                         for (int MATROWS = -radius; MATROWS <= radius; MATROWS++)
                         {
         
-                            byte* tempPtr = (byte*)LockedImage.Scan0 +
-                                ((ROWS + MATROWS) * LockedImage.Stride);
+                            byte* tempPtr = (byte*)LockedImage.Scan0 + ((ROWS + MATROWS) * LockedImage.Stride);
 
 
                             for (int MATCOLS = -radius; MATCOLS <= radius; MATCOLS++)
                             {
-                                // Get neightbour element color value.
-                                clrValue = (byte)tempPtr[COLS + MATCOLS];
+                                clrValue = tempPtr[COLS + MATCOLS];
 
                                 if (max < clrValue)
                                 {
@@ -208,10 +203,12 @@ namespace Assignment
                 copiedImage.Height), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
            
             int size = 5;
-            int radius = (size-1) / 2;
-     
+            int radius = size / 2;
+            DateTime pt;
             unsafe
             {
+                pt = DateTime.Now;
+             
                 //컬럼 루프
                 Parallel.For(radius, DestData.Height - radius, (int ROWS) =>
                 {
@@ -224,18 +221,14 @@ namespace Assignment
                         byte min = 255;
                         byte clrValue = 0;
 
-                        for (int MATROWS = 0; MATROWS < 5; MATROWS++)
+                        for (int MATROWS = -radius; MATROWS <= radius; MATROWS++)
                         {
-                            int ir = MATROWS - radius;
-                            byte* tempPtr = (byte*)LockedImage.Scan0 +
-                                ((ROWS + ir) * LockedImage.Stride);
+                            byte* tempPtr = (byte*)LockedImage.Scan0 + ((ROWS + MATROWS) * LockedImage.Stride);
 
-                            for (int MATCOLS = 0; MATCOLS < 5; MATCOLS++)
+                            for (int MATCOLS = -radius; MATCOLS <= radius; MATCOLS++)
                             {
-                                int jr = MATCOLS - radius;
-
                                 //주변 화소 값을 통한 min 갱신
-                                clrValue = (byte)tempPtr[COLS + jr];
+                                clrValue = tempPtr[COLS + MATCOLS];
                                 min = Math.Min(min, clrValue);
 
                             }
@@ -259,6 +252,7 @@ namespace Assignment
             bmpData.UnlockBits(LockedImage);
             copiedImage.UnlockBits(DestData);
 
+            Console.WriteLine("Time Cost : " + (DateTime.Now.Ticks / 10000 - pt.Ticks/10000));
             // return dilated bitmap.
             return copiedImage;
         }
@@ -452,7 +446,7 @@ namespace Assignment
 
             double kcenter_data = 0;
             int kcenter = 0;
-            int pIndex = 0;
+    
             for (int rows = offset; rows < height - offset; rows++)
             {
                 int pvalue = 0;
@@ -559,27 +553,64 @@ namespace Assignment
             return copiedImage;     
         }
 
-        /*
         public static Bitmap LaplaceFilter(Bitmap bmpData)
         {
-            double[,] matrix = new double[5, 5] {
-            { 0,0,-1,0,0},
-            { 0, -1, -2, -1, 0},
-            { -1, -2, 16, -2, -1},
-            { 0, -1, -2, -1, 0},
-            { 0,0,-1,0,0}
-            };
+            int[,] maskMatrix = new int[3, 3]  { { 0, 1, 0 },
+                                                        { 1, -4, 1 },
+                                                        {0, 1, 0} };
 
-            BitmapData bitmapData = bmpData.LockBits(new Rectangle(0, 0, bmpData.Width, bmpData.Height), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
+            int width = bmpData.Width;
+            int height = bmpData.Height;
+            Bitmap copiedImage = new Bitmap(bmpData.Width, bmpData.Height, PixelFormat.Format8bppIndexed);
+            BitmapData LockedImage = bmpData.LockBits(new Rectangle(0, 0, bmpData.Width, bmpData.Height), ImageLockMode.ReadOnly, PixelFormat.Format8bppIndexed);
+            BitmapData DestData = copiedImage.LockBits(new Rectangle(0, 0, copiedImage.Width, copiedImage.Height), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
 
-            Bitmap resultImage = new Bitmap(bmpData.Width, bmpData.Height, PixelFormat.Format8bppIndexed);
-            BitmapData srcData = resultImage.LockBits(new Rectangle(0, 0, resultImage.Width, resultImage.Height), ImageLockMode.ReadOnly, PixelFormat.Format8bppIndexed);
+            int size = 3;
+            int radius = size / 2;
+
+            int gray = 0;
 
 
-            return resultImage;
+            unsafe
+            {
+                var ptr = (byte*)LockedImage.Scan0;
+                var cptr = (byte*)DestData.Scan0;
+                
+                for (int row = 0; row < height; row++)
+                {
+                    byte* tempPtr = (byte*)DestData.Scan0 + row * DestData.Stride;
+                    for (int col = 0; col < width; col++)
+                    {
+
+                        cptr[col] = 0;
+                    }
+                }
+
+                for (int row = 1; row<height-1; row++)
+                {
+                    for(int col = 1; col<width-1; col++)
+                    {
+                        gray = *(ptr + row * DestData.Stride + col - 1) + *(ptr + (row-1)* DestData.Stride + col) - 
+                            4 * (*(ptr + DestData.Stride * row + col)) + *(ptr + (row+1)* DestData.Stride + col) + *(ptr + row* DestData.Stride + col+1); //bytes[i, j - 1] + bytes[i - 1, j] - 4 * bytes[i, j] + bytes[i + 1, j] + bytes[i, j + 1];
+                        gray += 128;
+                        if(gray > 158)
+                        {
+                            gray = 0;
+                        }
+                        else
+                        {
+                            gray = 255;
+                        }
+                        *(cptr + row * DestData.Stride + col) = (byte)gray;//result[i*width + j] = (byte)gray;
+                    }
+                }
+            }        
+
+            bmpData.UnlockBits(LockedImage);
+            copiedImage.UnlockBits(DestData);
+
+            return copiedImage;
         }
-
-      */
         
     }
 
