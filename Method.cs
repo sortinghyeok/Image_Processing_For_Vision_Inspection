@@ -131,21 +131,15 @@ namespace Assignment
 
             int size = 5;
             //byte max, clrValue;
-            int radius = size / 2;
+            int radius = (size-1) / 2;
             //int ir, jr;
 
             unsafe
             {
-                Parallel.For(radius, DestData.Height - radius, (int ROWS) => {
-      
-                    byte* ptr = (byte*)LockedImage.Scan0 + (ROWS * LockedImage.Stride);
-                    byte* dstPtr = (byte*)DestData.Scan0 + (ROWS * LockedImage.Stride);
-
- 
-                    for (int COLS = radius; COLS < DestData.Width - radius; COLS++)
+                Parallel.For(radius, DestData.Height - radius, (int ROWS) => {  
+                    for (int COLS = radius; COLS < DestData.Stride - radius; COLS++)
                     {
                         byte max = 0;
-                        byte clrValue = 0;
             
                         for (int MATROWS = -radius; MATROWS <= radius; MATROWS++)
                         {
@@ -155,23 +149,20 @@ namespace Assignment
 
                             for (int MATCOLS = -radius; MATCOLS <= radius; MATCOLS++)
                             {
-                                clrValue = tempPtr[COLS + MATCOLS];
-
-                                if (max < clrValue)
+                                if(maskMatrix[MATROWS + radius, MATCOLS + radius] == 1)
                                 {
-                                    if (maskMatrix[MATROWS+radius, MATCOLS+radius] != 0)
-                                        max = clrValue;
+                                    max = Math.Max(max, tempPtr[COLS + MATCOLS]);
+                                }
+                                else
+                                {
+                                    continue;
                                 }
                             }
                         }
-
-                        *dstPtr = max;
-
-                        ptr += 1;
-                        dstPtr += 1;
+                        var dptr = (byte*)DestData.Scan0;
+                        *(dptr + ROWS * DestData.Stride + COLS) = max;
                     }
-                });//for (int cols = radius; cols < DestData.Height - radius; cols++)
-               
+                });               
             }
           
             var newPalette = copiedImage.Palette;
@@ -190,7 +181,13 @@ namespace Assignment
         }
         public static Bitmap Erode(Bitmap bmpData)
         {
-
+            byte[,] maskMatrix = new byte[5, 5] {
+            {0,0,0,0,0},
+            {0,1,1,1,0},
+            {0,1,1,1,0},
+            {0,1,1,1,0},
+            {0,0,0,0,0}
+                };
             // Create Destination bitmap.
             Bitmap copiedImage = new Bitmap(bmpData.Width, bmpData.Height, PixelFormat.Format8bppIndexed);
 
@@ -203,7 +200,7 @@ namespace Assignment
                 copiedImage.Height), ImageLockMode.ReadWrite, PixelFormat.Format8bppIndexed);
            
             int size = 5;
-            int radius = size / 2;
+            int radius = (size-1) / 2;
             DateTime pt;
             unsafe
             {
@@ -212,14 +209,10 @@ namespace Assignment
                 //컬럼 루프
                 Parallel.For(radius, DestData.Height - radius, (int ROWS) =>
                 {
-                    byte* ptr = (byte*)LockedImage.Scan0 + (ROWS * LockedImage.Stride);
-                    byte* dstPtr = (byte*)DestData.Scan0 + (ROWS * LockedImage.Stride);
-
                     //로우 루프
                     for (int COLS = radius; COLS < DestData.Width - radius; COLS++)
                     {
                         byte min = 255;
-                        byte clrValue = 0;
 
                         for (int MATROWS = -radius; MATROWS <= radius; MATROWS++)
                         {
@@ -227,19 +220,23 @@ namespace Assignment
 
                             for (int MATCOLS = -radius; MATCOLS <= radius; MATCOLS++)
                             {
+                                if(maskMatrix[radius + MATROWS, MATCOLS+radius]==1)
+                                {
+                                    min = Math.Min(min, tempPtr[COLS + MATCOLS]);
+                                }
+                                else
+                                {
+                                    continue;
+                                }
                                 //주변 화소 값을 통한 min 갱신
-                                clrValue = tempPtr[COLS + MATCOLS];
-                                min = Math.Min(min, clrValue);
+                               
 
                             }
                         }
-
-                        *dstPtr = min;
-
-                        ptr += 1;
-                        dstPtr += 1;
+                        var dptr = (byte*)DestData.Scan0;
+                        *(dptr + ROWS*DestData.Stride + COLS) = min;
                     }
-                });//for (int cols = radius; cols < DestData.Height - radius; cols++)
+                });
             }
             
             var newPalette = copiedImage.Palette;
