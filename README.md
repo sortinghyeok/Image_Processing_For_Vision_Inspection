@@ -1,21 +1,23 @@
 # 픽셀 직접 접근 비전 알고리즘 적용 프로그램 개발
 
+- 본 Readme에 사용된 이미지는 pixabay 등에서 구한 free image입니다.
+- 본 프로젝트 수행 중 실제로 사용한 이미지는 반도체 Circuit 및 Particle 등의 bmp 파일이었음을 밝힙니다.
+
 ## 대용량 bmp 파일에 대한 로딩 로직 구현, 전체 이미지 세이브 로직 구현 완료 / 2022.08.23
 
 완료
 - 파일을 바이트 Stream으로 변경하고, 해당 Stream을 메모리 직접 접근을 통한 로우 레벨 수준의 분할 Reading하여 메모리가 처리 가능한 수준으로 바꾸어 로딩 성공
 
-![image](https://user-images.githubusercontent.com/80696846/187153489-ae6e2f66-4648-4a9d-8f6d-87f70829dfa1.png)
+![image](https://user-images.githubusercontent.com/80696846/187596495-f558de18-e87f-45ba-8e19-6c44dcb2d101.png)
 
 ## Morphology Dilation 연산 적용 완료, 확대, 축소 기능 적용 개발 완료 / 2022.08.24
 
 완료
-- 픽셀 패딩 밀리는 현상 수정 완료,
+- 픽셀 패딩 밀리는 현상 수정 완료
 - 모폴로지 연산 중 팽창 구현 완료
 
-![image](https://user-images.githubusercontent.com/80696846/187153700-5586d86a-fe5f-44d1-81f6-582ad16a2bd0.png)
+![image](https://user-images.githubusercontent.com/80696846/187596453-4baf8951-2213-4cdd-a5e1-18c743de045d.png)
 
-![image](https://user-images.githubusercontent.com/80696846/187153444-cf27ff3c-eab4-47a1-89ab-2015d861d676.png)
 
 이슈
 - 확대, 축소 시 저장 기능에 문제 있음
@@ -26,7 +28,7 @@
 완료
 - 모폴로지 연산 중 침식(축소) 구현 완료
 
-![image](https://user-images.githubusercontent.com/80696846/187153586-d223fe68-4c57-43ee-be9d-59d80d054f98.png)
+![image](https://user-images.githubusercontent.com/80696846/187596615-c8a6bed0-4e2b-47bf-bdab-747fcc0d0fbe.png)
 
 이슈
 - 오리지널 비트맵의 저장시 저장 안되는 이슈 발견
@@ -36,12 +38,12 @@
 완료
 - 히스토그램 평활화와 오츠 이진화 기능 구현 완료
 
-![image](https://user-images.githubusercontent.com/80696846/187153766-56467f2b-f607-463c-9601-e3b246d188ba.png)
+![image](https://user-images.githubusercontent.com/80696846/187596663-1b80bfef-0612-41b5-b171-014460e6f92c.png)
 
-![image](https://user-images.githubusercontent.com/80696846/187153824-01ccb0c5-a318-4989-92c9-ccfbfdd10c05.png)
+![image](https://user-images.githubusercontent.com/80696846/187596681-8644c518-03d8-4a6b-96e7-c0ceaeb6e0ae.png)
 
 이슈
-- Gaussian Filter 기능 로직 완료했으나 Blur의 느낌이 아님. 색이 단순히 어두워지는 느낌. 추후 로직을 살펴봐야할 필요 있음
+- Gaussian Filter 기능 로직 완료했으나 Blur가 적용되지 않고 단순히 색채가 어두워지기만 하여 로직의 문제가 있음
 - 연산 미처리한 원데이터 저장 불가 이슈 잔존, 연산 추가 개발 후 추후 수정하도록 함
 
 ## Morphology Erosion, Parallel Processing 중 이슈 발견 / 2022.08.29
@@ -49,8 +51,6 @@
 이슈
 - 모폴로지 침식 중 픽셀의 우측만이 수그러드는 현상 발견, 코드 구현 중 커널의 중심이 정가운데가 아닌 좌측에 있는 것을 확인하고 이에 대한 수정 요망
 - 병렬 처리 시도 시 CPU 점유율이 98퍼센트까지 올라가고 프로그램은 응답이 없는 현상이 계속 
-
-![image](https://user-images.githubusercontent.com/80696846/187153961-877e655e-1105-4fe1-a2e8-5706f2bf75ea.png)
 
 ## Morphology Erosion, Dilation, Gaussian Filter 로직 병렬화 적용 성공 / 2022.08.29
 
@@ -79,7 +79,7 @@
 완료
 - 가우시안 필터에 대한 로직 수정 완료
 
-![image](https://user-images.githubusercontent.com/80696846/187154278-64f072c3-8961-4e4c-8122-bed3f8454f3d.png)
+![image](https://user-images.githubusercontent.com/80696846/187596873-3155ea99-92e5-48c0-bfa6-ca6586811147.png)
 
 이슈
 - 히스토그램 평활화에 병렬화 로직 추가 필요
@@ -90,7 +90,7 @@
 완료
 - 라플라스 필터에 대한 구현 완료
 
-![image](https://user-images.githubusercontent.com/80696846/187328167-427e0127-af39-4f5f-8edc-80fd275d1f3c.png)
+![image](https://user-images.githubusercontent.com/80696846/187596930-9455e8ca-c215-472a-b2ee-1d3a9023dd7a.png)
 
 이슈
 - 라플라스 필터에 병렬화 적용 예정
@@ -102,9 +102,9 @@
 - Morphology Pointer를 자동으로 1씩 늘어나 픽셀 별로 모두 적용되는 것을 유도했으나, padding 1~3bytes에 대하여도 이것이 적용되어 우측 여유 공간의 수축이 일어났던 것으로 확인
 - Pixel에 대한 접근시 해당 Row의 Stride를 갱신하는 것으로 정확한 line의 매핑이 가능해져, 해당 이슈에 대한 수정이 완료됨
 
-![image](https://user-images.githubusercontent.com/80696846/187332712-6694b5f2-d5e9-4030-8b36-3f6db17f759d.png)
+![image](https://user-images.githubusercontent.com/80696846/187596958-eded2a80-4b77-4f5a-bdf1-d5e7b9c16949.png)
 
-![image](https://user-images.githubusercontent.com/80696846/187332644-4c78387e-9b0e-4496-85d8-88d8cc88cef5.png)
+![image](https://user-images.githubusercontent.com/80696846/187596977-3de92bde-3037-4fb1-b810-b0782c471a29.png)
 
 ## Laplace Filter 병렬화 구현 완료 / 2022.08.30
 
