@@ -13,6 +13,17 @@ namespace Assignment
 {
     class Method
     {
+        class FFTElement
+        {
+            public double re = 0.0;
+            public double im = 0.0;
+            public FFTElement next;
+            public uint revTgt;
+        }
+        private uint m_logN = 0;
+        private uint m_N = 0;
+        private FFTElement[] m_X;
+
         private uint header_size;
         private uint pixel_width;
         private uint pixel_height;
@@ -22,6 +33,37 @@ namespace Assignment
         private uint padding_bytes;
         private uint width_bytes;
         private uint pixels;
+
+        private uint BitReverse(uint x, uint numBits)
+        {
+            uint y = 0;
+            for (uint i = 0; i < numBits; i++)
+            {
+                y <<= 1;
+                y |= x & 0x0001;
+                x >>= 1;
+            }
+            return y;
+        }
+        public void FFTFilter(uint logN)
+        {
+            m_logN = logN;
+            m_N = (uint)(1 << (int)m_logN);
+
+            m_X = new FFTElement[m_N];
+            for(uint k = 0; k<m_N; k++)
+            {
+                m_X[k] = new FFTElement();
+            }
+            for(uint k = 0; k<m_N-1; k++)
+            {
+                m_X[k].next = m_X[k + 1];
+            }
+            for(uint k = 0; k< m_N; k++)
+            {
+                m_X[k].revTgt = BitReverse(k, logN);
+            }
+        }
 
         public List<uint> ParsingBMPHeader(BinaryReader br) //binary file로부터 비트 스트림을 가진 객체 br을 parameter로 받음
         {
@@ -265,35 +307,33 @@ namespace Assignment
             byte[] result = new byte[bytes];
             Marshal.Copy(sd.Scan0, buffer, 0, bytes);
             bmpData.UnlockBits(sd);
-            int current = 0;
-            double[] pn = new double[256];
+            int byteOffset = 0;
+            double[] pixelDistribution = new double[256];
             for (int p = 0; p < bytes; p++)
             {
-                pn[buffer[p]]++;
+                pixelDistribution[buffer[p]]++;
             }
-            for (int prob = 0; prob < pn.Length; prob++)
+            for (int idx = 0; idx < pixelDistribution.Length; idx++)
             {
-                pn[prob] /= (width * height);
+                pixelDistribution[idx] /= (width * height);
             }
             for (int y = 0; y < height; y++)
             {
                 for (int x = 0; x < width; x++)
                 {
-                    current = y * sd.Stride + x;
+                    byteOffset = y * sd.Stride + x;
                     double sum = 0;
-                    for (int i = 0; i < buffer[current]; i++)
+                    for (int i = 0; i < buffer[byteOffset]; i++)
                     {
-                        sum += pn[i];
+                        sum += pixelDistribution[i];
                     }
                     
-                    result[current] = (byte)Math.Floor(255 * sum);
-                    
-                    //result[current + 3] = 255;
+                    result[byteOffset] = (byte)Math.Floor(255 * sum);
+                   
                 }
             }
        
-            BitmapData rd = res.LockBits(new Rectangle(0, 0, width, height),
-                ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
+            BitmapData rd = res.LockBits(new Rectangle(0, 0, width, height),ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
             Marshal.Copy(result, 0, rd.Scan0, bytes);
             var ptr = rd.Scan0;
             for (var i = 0; i < bmpData.Height; i++)
@@ -320,11 +360,7 @@ namespace Assignment
 
             Bitmap res_img = new Bitmap(width, height, PixelFormat.Format8bppIndexed);
             BitmapData image_data = img.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format8bppIndexed);
-            BitmapData res_data = res_img.LockBits(
-              new Rectangle(0, 0, width, height),
-              ImageLockMode.WriteOnly,
-              PixelFormat.Format8bppIndexed);
-
+            BitmapData res_data = res_img.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format8bppIndexed);
 
             int bytes = image_data.Stride * image_data.Height;
             byte[] buffer = new byte[bytes];
@@ -339,36 +375,36 @@ namespace Assignment
                 histogram[buffer[i]]++;
             }
 
-            double global_mean = 0;
+            double globalMean = 0;
             for (int i = 0; i < 256; i++)
             {
-                global_mean += i * histogram[i];
+                globalMean += i * histogram[i];
             }
             int total = width*height;
             double sumB = 0;
-            double wB = 0;
-            double wF = 0;
+            double weightBackground = 0;
+            double weightForeground = 0;
 
             double varMax = 0;
             double threshold = 0;
 
             for (int t = 0; t < 256; t++)
             {
-                wB += histogram[t];               // Weight Background
-                if (wB == 0) continue;
+                weightBackground += histogram[t];           
+                if (weightBackground == 0) continue;
 
-                wF = total - wB;                 // Weight Foreground
-                if (wF == 0) break;
+                weightForeground = total - weightBackground;             
+                if (weightForeground == 0) break;
 
                 sumB += (t * histogram[t]);
 
-                double mB = sumB / wB;            // Mean Background
-                double mF = (global_mean - sumB) / wF;    // Mean Foreground
+                double meanBackground = sumB / weightBackground;          
+                double meanForeground = (globalMean - sumB) / weightForeground;  
 
-                // Calculate Between Class Variance
-                double varBetween = wB * wF * (mB - mF) * (mB - mF);
+                //클래스간 분산 계산
+                double varBetween = weightBackground * weightForeground * (meanBackground - meanForeground) * (meanBackground - meanForeground);
 
-                // Check if new maximum found
+                // 클래스간 분산이 최대값을 넘으면 갱신, threshold 갱신
                 if (varBetween > varMax)
                 {
                     varMax = varBetween;
@@ -381,8 +417,7 @@ namespace Assignment
                 result[i] = (byte)((buffer[i] > threshold) ? 255 : 0);
             }
 
-          
-            //Marshal.Copy(result, 0, res_data.Scan0, bytes);
+            //Marshal.Copy(result, 0, res_data.Scan0, bytes); 불가. 대용량 데이터는 한번에 부를 수 없음
 
             var ptr = res_data.Scan0;
             for (var i = 0; i < height; i++)
@@ -396,7 +431,7 @@ namespace Assignment
             return res_img;
         }
 
-        //kernel 구현 시도중 실패...
+ 
         public static double[,] GaussianKernel(int length, double weight)
         {
             double[,] kernel = new double[length, length];
@@ -437,7 +472,7 @@ namespace Assignment
             Marshal.Copy(srcData.Scan0, buffer, 0, bytes);
             srcImage.UnlockBits(srcData);
 
-            //get amount of array in dimension 0
+            //커널의 너비로 오프셋을 정하는 방법의 하나로, 커널 값의 변수를 바꿀 경우 다른 코드를 변경할 필요 없이 사용 가능하다. 같은 기능을 하지만 직접 상수리터럴을 주어 구현한 것은 하단에 있다.
             int offset = (kernel.GetLength(0) - 1) /2;
 
 
@@ -553,8 +588,8 @@ namespace Assignment
         public static Bitmap LaplaceFilter(Bitmap bmpData)
         {
             int[,] maskMatrix = new int[3, 3]  { { 0, 1, 0 },
-                                                        { 1, -4, 1 },
-                                                        {0, 1, 0} };
+                                                { 1, -4, 1 },
+                                                {0, 1, 0} };
 
             int width = bmpData.Width;
             int height = bmpData.Height;

@@ -43,6 +43,7 @@ namespace Assignment
             this.Panel1 = new System.Windows.Forms.Panel();
             this.photo_Executed = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btn_partSave = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.photo_bmp)).BeginInit();
             this.Panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.photo_Executed)).BeginInit();
@@ -65,7 +66,7 @@ namespace Assignment
             // 
             // btn_Laplace
             // 
-            this.btn_Laplace.Location = new System.Drawing.Point(1746, 348);
+            this.btn_Laplace.Location = new System.Drawing.Point(1746, 414);
             this.btn_Laplace.Name = "btn_Laplace";
             this.btn_Laplace.Size = new System.Drawing.Size(126, 35);
             this.btn_Laplace.TabIndex = 3;
@@ -75,21 +76,21 @@ namespace Assignment
             // 
             // btn_FFT
             // 
-            this.btn_FFT.Location = new System.Drawing.Point(1746, 389);
+            this.btn_FFT.Location = new System.Drawing.Point(1746, 455);
             this.btn_FFT.Name = "btn_FFT";
             this.btn_FFT.Size = new System.Drawing.Size(126, 35);
             this.btn_FFT.TabIndex = 4;
-            this.btn_FFT.Text = "필터 FFT";
+            this.btn_FFT.Text = "!필터 FFT";
             this.btn_FFT.UseVisualStyleBackColor = true;
             this.btn_FFT.Click += new System.EventHandler(this.btn_FFT_Click);
             // 
             // btn_Template
             // 
-            this.btn_Template.Location = new System.Drawing.Point(1746, 430);
+            this.btn_Template.Location = new System.Drawing.Point(1746, 496);
             this.btn_Template.Name = "btn_Template";
             this.btn_Template.Size = new System.Drawing.Size(126, 35);
             this.btn_Template.TabIndex = 5;
-            this.btn_Template.Text = "템플릿 매칭";
+            this.btn_Template.Text = "!템플릿 매칭";
             this.btn_Template.UseVisualStyleBackColor = true;
             this.btn_Template.Click += new System.EventHandler(this.btn_Template_Click);
             // 
@@ -115,7 +116,7 @@ namespace Assignment
             // 
             // btn_Expand
             // 
-            this.btn_Expand.Location = new System.Drawing.Point(1746, 111);
+            this.btn_Expand.Location = new System.Drawing.Point(1746, 177);
             this.btn_Expand.Name = "btn_Expand";
             this.btn_Expand.Size = new System.Drawing.Size(126, 35);
             this.btn_Expand.TabIndex = 9;
@@ -125,7 +126,7 @@ namespace Assignment
             // 
             // btn_Contract
             // 
-            this.btn_Contract.Location = new System.Drawing.Point(1746, 152);
+            this.btn_Contract.Location = new System.Drawing.Point(1746, 218);
             this.btn_Contract.Name = "btn_Contract";
             this.btn_Contract.Size = new System.Drawing.Size(126, 35);
             this.btn_Contract.TabIndex = 10;
@@ -135,7 +136,7 @@ namespace Assignment
             // 
             // btn_HistoEqualizer
             // 
-            this.btn_HistoEqualizer.Location = new System.Drawing.Point(1746, 208);
+            this.btn_HistoEqualizer.Location = new System.Drawing.Point(1746, 274);
             this.btn_HistoEqualizer.Name = "btn_HistoEqualizer";
             this.btn_HistoEqualizer.Size = new System.Drawing.Size(126, 35);
             this.btn_HistoEqualizer.TabIndex = 11;
@@ -145,7 +146,7 @@ namespace Assignment
             // 
             // btn_OtsuThresh
             // 
-            this.btn_OtsuThresh.Location = new System.Drawing.Point(1746, 249);
+            this.btn_OtsuThresh.Location = new System.Drawing.Point(1746, 315);
             this.btn_OtsuThresh.Name = "btn_OtsuThresh";
             this.btn_OtsuThresh.Size = new System.Drawing.Size(126, 35);
             this.btn_OtsuThresh.TabIndex = 12;
@@ -154,7 +155,7 @@ namespace Assignment
             // 
             // btn_Gauss
             // 
-            this.btn_Gauss.Location = new System.Drawing.Point(1746, 307);
+            this.btn_Gauss.Location = new System.Drawing.Point(1746, 373);
             this.btn_Gauss.Name = "btn_Gauss";
             this.btn_Gauss.Size = new System.Drawing.Size(126, 35);
             this.btn_Gauss.TabIndex = 13;
@@ -193,11 +194,22 @@ namespace Assignment
             this.panel2.Size = new System.Drawing.Size(850, 850);
             this.panel2.TabIndex = 15;
             // 
+            // btn_partSave
+            // 
+            this.btn_partSave.Location = new System.Drawing.Point(1746, 113);
+            this.btn_partSave.Name = "btn_partSave";
+            this.btn_partSave.Size = new System.Drawing.Size(126, 35);
+            this.btn_partSave.TabIndex = 16;
+            this.btn_partSave.Text = "!보이는 곳 저장";
+            this.btn_partSave.UseVisualStyleBackColor = true;
+            this.btn_partSave.Click += new System.EventHandler(this.btn_partSave_Click);
+            // 
             // Prj1_jhLee
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1884, 911);
+            this.Controls.Add(this.btn_partSave);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.Panel1);
             this.Controls.Add(this.btn_Gauss);
@@ -237,6 +249,7 @@ namespace Assignment
         private System.Windows.Forms.Panel Panel1;
         private System.Windows.Forms.PictureBox photo_Executed;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button btn_partSave;
     }
 }
 

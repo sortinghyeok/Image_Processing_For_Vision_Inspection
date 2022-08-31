@@ -24,7 +24,7 @@ namespace Assignment
 
         private Point executedBeginPoint = Point.Empty;
         private Point executedMovePoint = Point.Empty;
-        string curentFilePath = "";
+        string currentFilepath = "";
 
         private void photo_Executed_MouseWheel(object sender, MouseEventArgs e)
         {
@@ -104,7 +104,7 @@ namespace Assignment
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     var filePath = ofd.FileName; //파일 경로
-                    curentFilePath = ofd.FileName;
+                    currentFilepath = ofd.FileName;
                     if (!filePath.EndsWith(".bmp"))
                     {
                         MessageBox.Show("알림", "파일 형식이 맞지 않습니다.");
@@ -308,6 +308,26 @@ namespace Assignment
         {
             photo_Executed.Image = Method.Erode((Bitmap)photo_Executed.Image);
            
+        }
+
+        private void btn_partSave_Click(object sender, EventArgs e)
+        {
+            string Filepath = "C:\\Users\\jhlee98\\Desktop\\" + "savedImage.bmp";
+            if (Filepath!= null)
+            {
+
+                Bitmap bitmap = new Bitmap(825, 825, PixelFormat.Format16bppGrayScale);
+
+                Graphics g = Graphics.FromImage(bitmap);
+                   
+                g.CopyFromScreen(885, 20, 0, 0, bitmap.Size);
+                    
+
+                bitmap.Save(Filepath, ImageFormat.Bmp);
+                
+                
+            }
+    
         }
     }
 
