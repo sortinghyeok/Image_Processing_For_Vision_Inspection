@@ -122,7 +122,7 @@ namespace Assignment
             this.btn_Expand.TabIndex = 9;
             this.btn_Expand.Text = "팽창";
             this.btn_Expand.UseVisualStyleBackColor = true;
-            this.btn_Expand.Click += new System.EventHandler(this.btn_Expand_Click_1);
+            this.btn_Expand.Click += new System.EventHandler(this.btn_Dilate_Click_1);
             // 
             // btn_Contract
             // 

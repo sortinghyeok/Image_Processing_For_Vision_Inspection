@@ -267,21 +267,22 @@ namespace Assignment
 
         private void btn_OtsuThresh_Click(object sender, EventArgs e)
         {
-            photo_Executed.Image = Method.OtsuThresholding((Bitmap)photo_Executed.Image);
+         
+            photo_Executed.Image = VisionAlgorithm.OtsuBinarization.OtsuThresholding((Bitmap)photo_Executed.Image);
         }
 
         
 
         private void btn_HistoEqualizer_Click(object sender, EventArgs e)
         {
-            photo_Executed.Image = Method.hist_Equalizer((Bitmap)photo_Executed.Image);
+            photo_Executed.Image = VisionAlgorithm.HistogramEqualization.hist_Equalizer((Bitmap)photo_Executed.Image);
         }
 
         private void btn_Gauss_Click(object sender, EventArgs e)
         {
             //double[,] kernelMap = Method.GaussianKernel(3, 0.8); // division params : 2* pi * 2 * 2
             //photo_Executed.Image = Method.GaussianConvolve((Bitmap)photo_Executed.Image, kernelMap);
-            photo_Executed.Image = Method.GaussianFilter((Bitmap)photo_Executed.Image);
+            photo_Executed.Image = VisionAlgorithm.GaussianFilter.ApplyGaussianFilter((Bitmap)photo_Executed.Image);
         }
 
         private void btn_Template_Click(object sender, EventArgs e)
@@ -296,17 +297,17 @@ namespace Assignment
 
         private void btn_Laplace_Click(object sender, EventArgs e)
         {
-            photo_Executed.Image = Method.LaplaceFilter((Bitmap)photo_Executed.Image);
+            photo_Executed.Image = VisionAlgorithm.LaplaceFilter.ApplyLaplaceFilter((Bitmap)photo_Executed.Image);
         }
 
-        private void btn_Expand_Click_1(object sender, EventArgs e)
+        private void btn_Dilate_Click_1(object sender, EventArgs e)
         {
-            photo_Executed.Image = Method.Dilate((Bitmap)photo_Executed.Image);
+            photo_Executed.Image = VisionAlgorithm.Morphology.Dilate((Bitmap)photo_Executed.Image);
         }
 
         private void btn_Contract_Click(object sender, EventArgs e)
         {
-            photo_Executed.Image = Method.Erode((Bitmap)photo_Executed.Image);
+            photo_Executed.Image = VisionAlgorithm.Morphology.Erode((Bitmap)photo_Executed.Image);
            
         }
 
