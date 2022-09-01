@@ -30,7 +30,7 @@ namespace Assignment
         private void InitializeComponent()
         {
             this.photo_bmp = new System.Windows.Forms.PictureBox();
-            this.btn_Laplace = new System.Windows.Forms.Button();
+            this.btn_BinaryLaplace = new System.Windows.Forms.Button();
             this.btn_FFT = new System.Windows.Forms.Button();
             this.btn_Template = new System.Windows.Forms.Button();
             this.btn_OpenImage = new System.Windows.Forms.Button();
@@ -44,6 +44,7 @@ namespace Assignment
             this.photo_Executed = new System.Windows.Forms.PictureBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.btn_partSave = new System.Windows.Forms.Button();
+            this.btn_GenLaplace = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.photo_bmp)).BeginInit();
             this.Panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.photo_Executed)).BeginInit();
@@ -64,19 +65,19 @@ namespace Assignment
             this.photo_bmp.MouseMove += new System.Windows.Forms.MouseEventHandler(this.photo_bmp_MouseMove);
             this.photo_bmp.MouseUp += new System.Windows.Forms.MouseEventHandler(this.photo_bmp_MouseUp);
             // 
-            // btn_Laplace
+            // btn_BinaryLaplace
             // 
-            this.btn_Laplace.Location = new System.Drawing.Point(1746, 414);
-            this.btn_Laplace.Name = "btn_Laplace";
-            this.btn_Laplace.Size = new System.Drawing.Size(126, 35);
-            this.btn_Laplace.TabIndex = 3;
-            this.btn_Laplace.Text = "필터 라플라스";
-            this.btn_Laplace.UseVisualStyleBackColor = true;
-            this.btn_Laplace.Click += new System.EventHandler(this.btn_Laplace_Click);
+            this.btn_BinaryLaplace.Location = new System.Drawing.Point(1746, 458);
+            this.btn_BinaryLaplace.Name = "btn_BinaryLaplace";
+            this.btn_BinaryLaplace.Size = new System.Drawing.Size(126, 35);
+            this.btn_BinaryLaplace.TabIndex = 3;
+            this.btn_BinaryLaplace.Text = "필터 이진 라플라스";
+            this.btn_BinaryLaplace.UseVisualStyleBackColor = true;
+            this.btn_BinaryLaplace.Click += new System.EventHandler(this.btn_BinLaplace_Click);
             // 
             // btn_FFT
             // 
-            this.btn_FFT.Location = new System.Drawing.Point(1746, 455);
+            this.btn_FFT.Location = new System.Drawing.Point(1746, 508);
             this.btn_FFT.Name = "btn_FFT";
             this.btn_FFT.Size = new System.Drawing.Size(126, 35);
             this.btn_FFT.TabIndex = 4;
@@ -86,7 +87,7 @@ namespace Assignment
             // 
             // btn_Template
             // 
-            this.btn_Template.Location = new System.Drawing.Point(1746, 496);
+            this.btn_Template.Location = new System.Drawing.Point(1746, 549);
             this.btn_Template.Name = "btn_Template";
             this.btn_Template.Size = new System.Drawing.Size(126, 35);
             this.btn_Template.TabIndex = 5;
@@ -204,11 +205,22 @@ namespace Assignment
             this.btn_partSave.UseVisualStyleBackColor = true;
             this.btn_partSave.Click += new System.EventHandler(this.btn_partSave_Click);
             // 
+            // btn_GenLaplace
+            // 
+            this.btn_GenLaplace.Location = new System.Drawing.Point(1746, 417);
+            this.btn_GenLaplace.Name = "btn_GenLaplace";
+            this.btn_GenLaplace.Size = new System.Drawing.Size(126, 35);
+            this.btn_GenLaplace.TabIndex = 17;
+            this.btn_GenLaplace.Text = "필터 범용 라플라스";
+            this.btn_GenLaplace.UseVisualStyleBackColor = true;
+            this.btn_GenLaplace.Click += new System.EventHandler(this.btn_GenLaplace_Click);
+            // 
             // Prj1_jhLee
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1884, 911);
+            this.Controls.Add(this.btn_GenLaplace);
             this.Controls.Add(this.btn_partSave);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.Panel1);
@@ -221,7 +233,7 @@ namespace Assignment
             this.Controls.Add(this.btn_OpenImage);
             this.Controls.Add(this.btn_Template);
             this.Controls.Add(this.btn_FFT);
-            this.Controls.Add(this.btn_Laplace);
+            this.Controls.Add(this.btn_BinaryLaplace);
             this.Name = "Prj1_jhLee";
             this.Text = "Prj1_JhLee";
             this.Load += new System.EventHandler(this.Prj1_jhLee_Load);
@@ -236,7 +248,7 @@ namespace Assignment
         #endregion
 
         private System.Windows.Forms.PictureBox photo_bmp;
-        private System.Windows.Forms.Button btn_Laplace;
+        private System.Windows.Forms.Button btn_BinaryLaplace;
         private System.Windows.Forms.Button btn_FFT;
         private System.Windows.Forms.Button btn_Template;
         private System.Windows.Forms.Button btn_OpenImage;
@@ -250,6 +262,7 @@ namespace Assignment
         private System.Windows.Forms.PictureBox photo_Executed;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button btn_partSave;
+        private System.Windows.Forms.Button btn_GenLaplace;
     }
 }
 

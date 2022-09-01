@@ -52,7 +52,7 @@ namespace Assignment
             btn_FFT.BringToFront();
             btn_Gauss.BringToFront();
             btn_HistoEqualizer.BringToFront();
-            btn_Laplace.BringToFront();
+            btn_BinaryLaplace.BringToFront();
             btn_OtsuThresh.BringToFront();
             btn_Template.BringToFront();
             btn_OpenImage.BringToFront();
@@ -295,11 +295,15 @@ namespace Assignment
 
         }
 
-        private void btn_Laplace_Click(object sender, EventArgs e)
+        private void btn_BinLaplace_Click(object sender, EventArgs e)
         {
-            photo_Executed.Image = VisionAlgorithm.LaplaceFilter.ApplyLaplaceFilter((Bitmap)photo_Executed.Image);
+            photo_Executed.Image = VisionAlgorithm.LaplaceFilter.ApplyBinaryLaplaceFilter((Bitmap)photo_Executed.Image);
         }
 
+        private void btn_GenLaplace_Click(object sender, EventArgs e)
+        {
+            photo_Executed.Image = VisionAlgorithm.LaplaceFilter.ApplyRGBLaplacian((Bitmap)photo_Executed.Image);
+        }
         private void btn_Dilate_Click_1(object sender, EventArgs e)
         {
             photo_Executed.Image = VisionAlgorithm.Morphology.Dilate((Bitmap)photo_Executed.Image);
@@ -330,6 +334,8 @@ namespace Assignment
             }
     
         }
+
+        
     }
 
 
