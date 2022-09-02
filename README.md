@@ -101,7 +101,7 @@
 ## 모폴로지 침식 중 픽셀의 우측만이 수그러드는 현상 수정 완료 / 2022.08.30
 
 완료
-- Morphology Pointer를 자동으로 1씩 늘어나 픽셀 별로 모두 적용되는 것을 유도했으나, padding 1~3bytes에 대하여도 이것이 적용되어 우측 여유 공간의 수축이 일어났던 것으로 확인
+- Morphology Pointer를 반복문 당 1씩 늘어나게 하여 픽셀 별로 모두 적용되는 것을 유도했으나, padding 1~3bytes에 대하여도 이것이 적용되어 우측 여유 공간의 수축이 일어났던 것으로 확인
 - Pixel에 대한 접근시 해당 Row의 Stride를 갱신하는 것으로 정확한 line의 매핑이 가능해져, 해당 이슈에 대한 수정이 완료됨
 
 ![image](https://user-images.githubusercontent.com/80696846/187596958-eded2a80-4b77-4f5a-bdf1-d5e7b9c16949.png)
