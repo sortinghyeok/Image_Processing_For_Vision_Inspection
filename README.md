@@ -1,4 +1,4 @@
-#  영상처리 Algorithm 직접 구현을 이용한 비전 및 장비 시퀀스용 알고리즘 개발
+#  영상처리 Algorithm 직접 구현을 이용한 비전 알고리즘 개발 (C#, EmguCV, Windows Forms...)
 
 - 본 Readme에 사용된 이미지는 pixabay 등에서 구한 free image입니다.
 - 본 프로젝트 수행 중 실제로 사용한 이미지는 반도체 Circuit 및 Particle 등의 bmp 파일이었음을 밝힙니다.
